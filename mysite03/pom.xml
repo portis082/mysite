@@ -7,7 +7,7 @@
 		<artifactId>mysite</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>mysite02</artifactId>
+	<artifactId>mysite03</artifactId>
 	<packaging>war</packaging>
 
 	<dependencies>
@@ -21,7 +21,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>mysite02</finalName>
+		<finalName>mysite03</finalName>
 	</build>
 
 </project>
