@@ -107,6 +107,58 @@ public class UserRepository {
 		return result;
 	}
 	
+	public UserVo findByNo(Long no) {
+		UserVo result = null;
+		
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			//연결하기
+			connection = getConnection();
+			
+			// sql 준비
+			String sql = "SELECT no, name, email, gender FROM user WHERE no=?";
+			pstmt = connection.prepareStatement(sql);
+			
+			// 바인딩
+			pstmt.setLong(1, no);
+			
+			// sql 실행
+			rs = pstmt.executeQuery();
+			
+			// 결과 가져오기
+			if(rs.next()) {
+				result = new UserVo();
+				
+				result.setNo(rs.getLong(1));
+				result.setName(rs.getString(2));
+				result.setEmail(rs.getString(3));
+				result.setGender(rs.getString(4));
+
+			}
+		} catch (SQLException e) {
+			System.out.println("error : " + e);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	private Connection getConnection() throws SQLException {
 		Connection connection = null;
 		
@@ -123,6 +175,8 @@ public class UserRepository {
 		
 		return connection;
 	}
+
+
 
 
 }
