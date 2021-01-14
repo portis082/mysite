@@ -8,16 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.bit2021.mvc.util.MVCUtil;
 import com.bit2021.mysite.repository.UserRepository;
 import com.bit2021.mysite.vo.UserVo;
+import com.bit2021.web.util.MVCUtil;
 
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("utf-8");
-
 		String action = request.getParameter("a");
 
 		if ("joinform".equals(action)) {
@@ -70,6 +68,17 @@ public class UserController extends HttpServlet {
 				session.invalidate();
 			}
 			MVCUtil.redirect(request.getContextPath(), request, response);
+			
+		} else if ("updateform".equals(action)) {
+			HttpSession session = request.getSession();
+			UserVo authUser = (UserVo)session.getAttribute("authUser");
+			
+			UserVo userVo = new UserRepository().findByNo(authUser.getNo());
+			
+			request.setAttribute("userVo", userVo);
+			MVCUtil.forward("user/updateform", request, response);
+		} else if ("update".equals(action)) {
+			// code
 			
 		} else {
 			MVCUtil.redirect(request.getContextPath(), request, response);

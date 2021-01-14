@@ -8,15 +8,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.bit2021.mvc.util.MVCUtil;
 import com.bit2021.mysite.repository.GuestbookRepository;
 import com.bit2021.mysite.vo.GuestbookVo;
+import com.bit2021.web.util.MVCUtil;
 
 public class GuestbookController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("utf-8");
 		
 		String action = request.getParameter("a");
 		if ("insert".equals(action)) {
@@ -31,7 +30,6 @@ public class GuestbookController extends HttpServlet {
 			
 			new GuestbookRepository().insert(vo);
 			
-			System.out.println(vo);
 			MVCUtil.redirect(request.getContextPath() + "/guestbook", request, response);
 		} else if ("deleteform".equals(action)) {
 			MVCUtil.forward("guestbook/deleteform", request, response);
