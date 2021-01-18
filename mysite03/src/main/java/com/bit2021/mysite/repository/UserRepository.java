@@ -176,6 +176,48 @@ public class UserRepository {
 		return connection;
 	}
 
+	public boolean update(UserVo vo) {
+		boolean result = false;
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			//연결하기
+			connection = getConnection();
+			
+			// sql 준비
+			String sql = "UPDATE user SET name=?, password=password(?), gender=? WHERE no=?";
+			pstmt = connection.prepareStatement(sql);
+			
+			// 바인딩
+			pstmt.setString(1, vo.getName());
+			pstmt.setString(2, vo.getPassword());
+			pstmt.setString(3, vo.getGender());
+			pstmt.setLong(4, vo.getNo());
+			
+			// sql 실행
+			int count = pstmt.executeUpdate();
+			result = (count == 1);
+			
+		} catch (SQLException e) {
+			System.out.println("error : " + e);
+		} finally {
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+		
+	}
+
 
 
 

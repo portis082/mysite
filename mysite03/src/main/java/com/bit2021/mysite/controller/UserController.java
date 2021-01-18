@@ -78,8 +78,17 @@ public class UserController extends HttpServlet {
 			request.setAttribute("userVo", userVo);
 			MVCUtil.forward("user/updateform", request, response);
 		} else if ("update".equals(action)) {
-			// code
+			UserVo vo = new UserVo();
 			
+			vo.setNo(Long.parseLong(request.getParameter("no")));
+			vo.setName(request.getParameter("name"));
+			vo.setEmail(request.getParameter("email"));
+			vo.setPassword(request.getParameter("password"));
+			vo.setGender(request.getParameter("gender"));
+			
+			new UserRepository().update(vo);
+			
+			MVCUtil.redirect(request.getContextPath(), request, response);
 		} else {
 			MVCUtil.redirect(request.getContextPath(), request, response);
 		}
