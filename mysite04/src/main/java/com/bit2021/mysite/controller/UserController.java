@@ -1,101 +1,86 @@
 package com.bit2021.mysite.controller;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.bit2021.mysite.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.bit2021.mysite.service.UserService;
 import com.bit2021.mysite.vo.UserVo;
-import com.bit2021.web.util.MVCUtil;
 
-public class UserController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action = request.getParameter("a");
-
-		if ("joinform".equals(action)) {
-			MVCUtil.forward("user/joinform", request, response);
-
-		} else if ("join".equals(action)) {
-			String name = request.getParameter("name");
-			String email = request.getParameter("email");
-			String password = request.getParameter("password");
-			String gender = request.getParameter("gender");
-
-			UserVo vo = new UserVo();
-			vo.setName(name);
-			vo.setEmail(email);
-			vo.setPassword(password);
-			vo.setGender(gender);
-
-			new UserRepository().save(vo);
-
-			MVCUtil.redirect(request.getContextPath() + "/user?a=joinsuccess", request, response);
-		} else if ("joinsuccess".equals(action)) {
-			MVCUtil.forward("user/joinsuccess", request, response);
-
-		} else if ("loginform".equals(action)) {
-			MVCUtil.forward("user/loginform", request, response);
-
-		} else if ("login".equals(action)) {
-			String email = request.getParameter("email");
-			String password = request.getParameter("password");
-
-			UserVo userVo = new UserRepository().findByEmailAndPassword(email, password);
-			if (userVo == null) {
-				request.setAttribute("result", "fail");
-				MVCUtil.forward("user/loginform", request, response);
-				return;
-			}
-
-			//인증처리
-			HttpSession session = request.getSession(true);
-			session.setAttribute("authUser", userVo);
-
-			MVCUtil.redirect(request.getContextPath(), request, response);
-
-		} else if ("logout".equals(action)) {
-			HttpSession session = request.getSession();
-
-			// 로그아웃 처리
-			if (session != null && session.getAttribute("authUser") != null) {
-				session.removeAttribute("authUser");
-				session.invalidate();
-			}
-			MVCUtil.redirect(request.getContextPath(), request, response);
-			
-		} else if ("updateform".equals(action)) {
-			HttpSession session = request.getSession();
-			UserVo authUser = (UserVo)session.getAttribute("authUser");
-			
-			UserVo userVo = new UserRepository().findByNo(authUser.getNo());
-			
-			request.setAttribute("userVo", userVo);
-			MVCUtil.forward("user/updateform", request, response);
-		} else if ("update".equals(action)) {
-			UserVo vo = new UserVo();
-			
-			vo.setNo(Long.parseLong(request.getParameter("no")));
-			vo.setName(request.getParameter("name"));
-			vo.setEmail(request.getParameter("email"));
-			vo.setPassword(request.getParameter("password"));
-			vo.setGender(request.getParameter("gender"));
-			
-			new UserRepository().update(vo);
-			
-			MVCUtil.redirect(request.getContextPath(), request, response);
-		} else {
-			MVCUtil.redirect(request.getContextPath(), request, response);
+@Controller
+@RequestMapping("/user")
+public class UserController {
+	@Autowired
+	private UserService userService;	
+	
+	@RequestMapping(value="/join", method=RequestMethod.GET)
+	public String join() {
+		return "user/join";
+	}
+	
+	@RequestMapping(value="/join", method=RequestMethod.POST)
+	public String join(UserVo userVo) {
+		userService.join(userVo);
+		return "redirect:/user/joinsuccess";
+	}
+	
+	@RequestMapping(value="/joinsuccess", method=RequestMethod.GET)
+	public String joinsuccess() {
+		return "user/joinsuccess";
+	}
+	
+	@RequestMapping(value="/login", method=RequestMethod.GET)
+	public String login() {
+		return "user/login";
+	}
+	
+	@RequestMapping(value="/login", method=RequestMethod.POST)
+	public String login(
+			HttpSession session,
+			Model model,
+			@RequestParam(value = "email", required=true, defaultValue="") String email, 
+			@RequestParam(value = "password", required=true, defaultValue="") String password) {
+		UserVo authUser = userService.getUser(email, password);
+		if(authUser == null) {
+			model.addAttribute("result","fail");
+			return "user/login";
 		}
+		
+		/* 인증처리 */
+		session.setAttribute("authUser", authUser);
+		
+		return "redirect:/";
 	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+	
+	@RequestMapping(value="/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("authUser");
+		session.invalidate();
+		return "redirect:/";
 	}
-
+	
+	@RequestMapping(value="/update", method=RequestMethod.GET)
+	public String update(HttpSession session, Model model) {
+		UserVo authUser = (UserVo)session.getAttribute("authUser");
+		Long no = authUser.getNo();
+		
+		UserVo userVo = userService.getUser(no);
+		model.addAttribute("userVo", userVo);
+		
+		return "user/update";
+	}
+	
+	@RequestMapping(value="/update", method=RequestMethod.POST)
+	public String update(UserVo userVo) {
+		
+		//UserVo userVo = userService.getUser(no);
+		//model.addAttribute("userVo", userVo);
+		
+		return "user/update";
+	}
 }

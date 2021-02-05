@@ -5,11 +5,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
+import com.bit2021.mysite.exception.UserRepositoryException;
 import com.bit2021.mysite.vo.UserVo;
 
+@Repository
 public class UserRepository {
 	
 	public boolean save(UserVo vo){
@@ -107,7 +109,7 @@ public class UserRepository {
 		return result;
 	}
 	
-	public UserVo findByNo(Long no) {
+	public UserVo findByNo(Long no) throws UserRepositoryException {
 		UserVo result = null;
 		
 		Connection connection = null;
@@ -139,7 +141,7 @@ public class UserRepository {
 
 			}
 		} catch (SQLException e) {
-			System.out.println("error : " + e);
+			throw new UserRepositoryException();
 		} finally {
 			try {
 				if (rs != null) {

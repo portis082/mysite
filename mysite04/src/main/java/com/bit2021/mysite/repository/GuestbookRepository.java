@@ -8,10 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import com.bit2021.mysite.vo.GuestbookVo;
 
+@Repository
 public class GuestbookRepository {
-	public boolean delete(Long no, String password) {
+	public boolean delete(GuestbookVo guestbookVo) {
 		boolean result = false;
 		Connection connection = null;
 		PreparedStatement pstmt = null;
@@ -21,12 +24,12 @@ public class GuestbookRepository {
 			connection = getConnection();
 			
 			// sql 준비
-			String sql = "delete from guestbook where no = ? and password = ?";
+			String sql = "DELETE FROM guestbook WHERE no = ? AND password = ?";
 			pstmt = connection.prepareStatement(sql);
 			
 			// 바인딩
-			pstmt.setLong(1, no);
-			pstmt.setString(2, password);
+			pstmt.setLong(1, guestbookVo.getNo());
+			pstmt.setString(2, guestbookVo.getPassword());
 			
 			// sql 실행
 			int count = pstmt.executeUpdate();
