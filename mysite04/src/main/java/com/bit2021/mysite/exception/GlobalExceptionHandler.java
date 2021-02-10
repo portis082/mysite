@@ -1,5 +1,8 @@
 package com.bit2021.mysite.exception;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,10 +18,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public void handlerException(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
 		// 로깅작업
-		LOG.error("log : " + e);
+		StringWriter errors = new StringWriter();
+		e.printStackTrace(new PrintWriter(errors));
+		LOG.error(errors.toString());
 		
 		// 안내 페이지
-		request.setAttribute("exception", e.toString());
+		request.setAttribute("exception", errors.toString());
 		request.getRequestDispatcher("/WEB-INF/views/error/exception.jsp").forward(request, response);
 	}
 }

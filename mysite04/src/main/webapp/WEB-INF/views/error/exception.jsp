@@ -11,8 +11,8 @@
 </head>
 <body>
 	<h1>예외 발생</h1>
-	<p>
+	<pre style="color:red">
 		${exception }
-	</p>
+	</pre>
 </body>
 </html>
