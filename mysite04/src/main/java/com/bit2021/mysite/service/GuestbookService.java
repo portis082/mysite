@@ -14,14 +14,14 @@ public class GuestbookService {
 	GuestbookRepository guestbookRepository;
 
 	public List<GuestbookVo> getMessageList() {
-		return new GuestbookRepository().findAll();
+		return guestbookRepository.findAll();
 	}
 
 	public boolean writeMessage(GuestbookVo guestbookVo) {
-		return new GuestbookRepository().insert(guestbookVo);
+		return guestbookRepository.insert(guestbookVo);
 	}
 
 	public boolean deleteMessage(GuestbookVo guestbookVo) {
-		return new GuestbookRepository().delete(guestbookVo);
+		return guestbookRepository.delete(guestbookVo);
 	}
 }

@@ -11,16 +11,19 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void join(UserVo userVo) {
-		userRepository.save(userVo);
+	public boolean join(UserVo userVo) {
+		return userRepository.save(userVo);
 	}
 
-	public UserVo getUser(String email, String password) {
-		return userRepository.findByEmailAndPassword(email, password);
+	public UserVo getUser(UserVo vo) {
+		return userRepository.findByEmailAndPassword(vo);
 	}
 
 	public UserVo getUser(Long no) {
-		UserVo userVo = userRepository.findByNo(no);
-		return userVo;
+		return userRepository.findByNo(no);
+	}
+
+	public boolean updateUser(UserVo userVo) {
+		return userRepository.update(userVo);
 	}
 }

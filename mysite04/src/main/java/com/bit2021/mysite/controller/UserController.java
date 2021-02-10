@@ -43,9 +43,8 @@ public class UserController {
 	public String login(
 			HttpSession session,
 			Model model,
-			@RequestParam(value = "email", required=true, defaultValue="") String email, 
-			@RequestParam(value = "password", required=true, defaultValue="") String password) {
-		UserVo authUser = userService.getUser(email, password);
+			UserVo vo) {
+		UserVo authUser = userService.getUser(vo);
 		if(authUser == null) {
 			model.addAttribute("result","fail");
 			return "user/login";
@@ -76,11 +75,10 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public String update(UserVo userVo) {
-		
-		//UserVo userVo = userService.getUser(no);
-		//model.addAttribute("userVo", userVo);
-		
-		return "user/update";
+	public String update(HttpSession session, UserVo userVo) {
+		UserVo authUser = (UserVo)session.getAttribute("authUser");
+		userVo.setNo(authUser.getNo());
+		userService.updateUser(userVo);
+		return "redirect:/user/update";
 	}
 }
