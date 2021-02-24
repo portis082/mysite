@@ -1,14 +1,13 @@
 package com.bit2021.mysite.controller;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.bit2021.mysite.security.Auth;
+import com.bit2021.mysite.security.AuthUser;
 import com.bit2021.mysite.service.UserService;
 import com.bit2021.mysite.vo.UserVo;
 
@@ -16,7 +15,7 @@ import com.bit2021.mysite.vo.UserVo;
 @RequestMapping("/user")
 public class UserController {
 	@Autowired
-	private UserService userService;	
+	private UserService userService;
 	
 	@RequestMapping(value="/join", method=RequestMethod.GET)
 	public String join() {
@@ -39,20 +38,18 @@ public class UserController {
 		return "user/login";
 	}
 	
+	@Auth
 	@RequestMapping(value="/update", method=RequestMethod.GET)
-	public String update(HttpSession session, Model model) {
-		UserVo authUser = (UserVo)session.getAttribute("authUser");
+	public String update(@AuthUser UserVo authUser, Model model) {
 		Long no = authUser.getNo();
-		
 		UserVo userVo = userService.getUser(no);
 		model.addAttribute("userVo", userVo);
-		
 		return "user/update";
 	}
 	
+	@Auth
 	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public String update(HttpSession session, UserVo userVo) {
-		UserVo authUser = (UserVo)session.getAttribute("authUser");
+	public String update(@AuthUser UserVo authUser, UserVo userVo) {
 		userVo.setNo(authUser.getNo());
 		userService.updateUser(userVo);
 		return "redirect:/user/update";

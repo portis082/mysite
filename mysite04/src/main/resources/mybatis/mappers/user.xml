@@ -44,4 +44,12 @@
 			</otherwise>
 		</choose>
 	</update>
+	
+	<select id="findByEmail" parameterType="string" resultType="uservo">
+		<![CDATA[
+		SELECT no
+			FROM user 
+		WHERE email=#{email }
+		]]>
+	</select>
 </mapper>
